@@ -675,32 +675,90 @@ layout: section
 
 # 9 · Async support
 
-Native `async` / `await`
+`async` / `await`, I/O vs CPU, and FastAPI + SQLAlchemy
 
 ---
 layout: default
 ---
 
-# When to go async
+# What is asynchronous programming?
 
 <v-clicks>
 
-- Use **`async def`** for **I/O-bound** work: HTTP calls, DB drivers that support async, file/network waits
-- **CPU-bound** work still belongs in threads/processes — async is not magic
-- Mix sync and async routes; FastAPI runs them appropriately on the event loop
+- **Cooperative concurrency** 
+  * While one task **waits** (network, disk, DB), it can give the control back to the runtime
+- **`async def`** defines a **coroutine**
+- **`await`** pauses *this* coroutine until the awaited operation finishes
+- Good fit for **waiting on I/O**
 
 </v-clicks>
 
-```python
-@app.get("/slow-io")
-async def slow_io():
-    # await fetch_from_service()
-    return {"status": "ok"}
-```
+---
+layout: default
+---
+
+# I/O-bound vs CPU-bound
+
+| | **I/O-bound** | **CPU-bound** |
+|--|--|--|
+| **What** | Waiting on network, database, filesystem, remote APIs | Heavy computation (loops, parsing huge blobs, crypto, ML inference on CPU) |
+| **`async/await`** | Often helps — overlap waits, serve more concurrent requests | **Does not speed up** the math; the GIL / one core still limits you |
+| **What to do** | `async def` + async clients (HTTP, DB drivers that support it) | **Threads**, **processes**, or **offload** to a worker / job queue |
+
+<v-click>
+
+Async is about **not sitting idle** while I/O completes — not about making tight loops faster.
+
+</v-click>
+
+---
+layout: default
+---
+
+# FastAPI specifics
+
+<v-clicks>
+
+- **ASGI + Starlette:** built for **async** request handling
+- You may use **`def`** or **`async def`** for path operations 
+- FastAPI runs **sync** functions in a **thread pool** 
+- Prefer **`async def`** when the route **`await`s** async I/O 
+- Avoid **blocking** calls (huge CPU work) **inside** `async def`
+
+</v-clicks>
 
 <div v-click class="mt-4 text-sm opacity-90">
 
-👉 Same typing and docs story whether the route is `def` or `async def`.
+Typing, OpenAPI, and validation work the **same** for `def` and `async def`.
+
+</div>
+
+---
+layout: default
+---
+
+# Example: SQLAlchemy async `select`
+
+```python
+from fastapi import FastAPI
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+app = FastAPI()
+
+# `User` = your ORM model (table mapping not shown)
+
+@app.get("/users/{user_id}")
+async def read_user(user_id: int, session: AsyncSession):
+    result = await session.execute(
+        select(User).where(User.id == user_id),
+    )
+    return result.scalar_one_or_none()
+```
+
+<div class="text-sm opacity-80 mt-2">
+
+`await session.execute(...)` yields while the DB driver waits — other requests can progress on the same loop.
 
 </div>
 

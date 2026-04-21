@@ -1,6 +1,6 @@
 ---
 theme: default
-background: https://cover.sli.dev
+background: /images/first-slide-background.png
 title: FastAPI — Modern Python APIs
 info: |
   ## FastAPI
@@ -80,9 +80,12 @@ layout: default
 
 ```mermaid
 flowchart LR
-  A[Python types] --> B[Validation]
-  A --> C[OpenAPI / JSON Schema]
-  A --> D[Editor support]
+  A[FastAPI] --> B[Types]
+  B --> C[Pydantic]
+  C --> D[Validation]
+  C --> E[OpenAPI / JSON Schema]
+  B --> F[Editor support]
+  A --> G[Starlette]
 ```
 
 <!--
@@ -403,27 +406,6 @@ def count_words(text: str) -> dict[str, int]:
 Type hints are optional at runtime (PEP 484+); FastAPI reads them for validation and OpenAPI.
 -->
 
-
----
-layout: default
----
-
-# Type hints = contract
-
-- No custom DSL — **plain `typing`**
-- Parameters and return types drive parsing and validation
-- **IDEs** autocomplete routes, models, and errors
-
-```python
-def greet(name: str) -> str:
-    return f"Hello, {name}"
-```
-
-<div class="text-sm opacity-80 mt-2">
-
-Same idea at scale: path, query, body, headers — all typed.
-
-</div>
 
 ---
 layout: default
@@ -961,8 +943,8 @@ layout: default
 
 <v-clicks>
 
-- **ASGI + Starlette:** built for **async** request handling
-- You may use **`def`** or **`async def`** for path operations 
+- **Asynchronous Server Gateway Interface (ASGI) + Starlette:**
+- Use **`def`** or **`async def`** for path operations 
 - FastAPI runs **sync** functions in a **thread pool** 
 - Prefer **`async def`** when the route **`await`s** async I/O 
 - Avoid **blocking** calls (huge CPU work) **inside** `async def`
@@ -985,13 +967,14 @@ layout: default
 from fastapi import FastAPI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from db import get_db_session
 
 app = FastAPI()
 
 # `User` = your ORM model (table mapping not shown)
 
 @app.get("/users/{user_id}")
-async def read_user(user_id: int, session: AsyncSession):
+async def read_user(user_id: int, session: AsyncSession = Depends(get_db_session)):
     result = await session.execute(
         select(User).where(User.id == user_id),
     )

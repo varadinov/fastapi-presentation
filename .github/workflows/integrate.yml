@@ -29,7 +29,8 @@ jobs:
       run: npm install
 
     - name: Build
-      run: SLIDEV_BASE_PATH="/$(echo ${{ github.repository }} | cut -d'/' -f2)" npm run build
+      # Vite base must start and end with / — see https://sli.dev/guide/hosting#github-pages
+      run: npm run build -- --base /${{ github.event.repository.name }}/
 
     - name: Setup Pages
       uses: actions/configure-pages@v5

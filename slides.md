@@ -46,13 +46,16 @@ layout: default
 
 <v-clicks>
 
-- Introduction & philosophy
-- Types as the core idea
-- First API & request handling
-- Pydantic models & auto docs
-- Dependency injection & errors
-- Async, project structure, advanced bits
-- OpenAPI metadata & summary
+- Introduction
+- REST & HTTP
+- OpenAPI
+- Types everywhere 
+- Your first API 
+- Request handling & automatic docs 
+- Dependency injection
+- Validation & errors 
+- Async support 
+- Real projects 
 
 </v-clicks>
 

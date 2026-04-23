@@ -1009,7 +1009,6 @@ fastapi-project/
 │   │   ├── router.py     # Main router
 │   │   └── endpoints/
 │   │       ├── users.py
-│   │       └── items.py
 │   ├── models/               # Database models (ORM)
 │   │   └── user.py
 │   ├── schemas/              # Pydantic schemas
@@ -1021,10 +1020,7 @@ fastapi-project/
 ├── tests/                   # Tests
 │   ├── test_users.py
 │   └── conftest.py
-├── .env
-├── alembic.ini
-├── pyproject.toml / requirements.txt
-└── README.md
+├── pyproject.toml
 ```
 
 
@@ -1032,10 +1028,9 @@ fastapi-project/
 layout: default
 ---
 
-# `APIRouter` + packages
+# APIRouter
 
 ```python
-# routes_items.py
 from fastapi import APIRouter
 
 router = APIRouter(prefix="/items", tags=["items"])
@@ -1046,7 +1041,6 @@ def list_items():
 ```
 
 ```python
-# main.py
 from fastapi import FastAPI
 from app.api.routes_items import router as items_router
 

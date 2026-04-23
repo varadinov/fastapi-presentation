@@ -73,13 +73,18 @@ layout: default
 
 # What is FastAPI?
 
+<v-clicks>
 
 - **Web framework** for building APIs with Python 3.9+
 - **Type hints** for clarity, better tooling, and safer code
 - Built on **Starlette** (ASGI) and **Pydantic**
 - **OpenAPI**: schemas and docs are a side effect of your code
 
+
+</v-clicks>
 <br />
+
+<v-clicks>
 
 ```mermaid
 flowchart LR
@@ -90,6 +95,8 @@ flowchart LR
   B --> F[Editor support]
   A --> G[Starlette]
 ```
+
+</v-clicks>
 
 <!--
 FastAPI is not a full CMS like Django; it shines at JSON APIs and microservices.
@@ -241,7 +248,7 @@ Same **resource** (`items`), three intents — **path**, **query**, **body**:
 **GET** — path segment + query string
 
 ```http
-GET /items/42?in_stock=true HTTP/1.1
+GET /items/42?detailed=true HTTP/1.1
 ```
 
 **POST** — create a new item (JSON body)
